@@ -1,0 +1,118 @@
+
+def findAllCSVFiles(path) {
+    dirContent = files(path)
+    result = []
+    
+    for (i in 0:size(dirContent)) {
+        item = dirContent[i]
+        fullPath = path + "/" + item.filename
+        if (item.isDir) {
+            temp = findAllCSVFiles(fullPath)
+            for(j in 0:size(temp)) {
+                result.append!(temp[j])
+            }
+        } else {
+            if (substr(fullPath,strlen(fullPath)-4) == ".csv") {
+                result.append!(fullPath)
+            }
+        }
+    }
+
+    return result
+}
+
+def loadCSVFile(path, dbTableHandle) {
+    csvSchema = extractTextSchema(path, delimiter=',')
+    csvData = loadText(path, schema=csvSchema, delimiter=',')
+
+    addColumn(csvData, `InstrumentType, SYMBOL) 
+    addColumn(csvData, `InstrumentYear, INT) 
+    addColumn(csvData, `InstrumentMonth, INT)
+    addColumn(csvData, `Continuous, SYMBOL)
+
+    UPDATE csvData
+    SET 
+        InstrumentType = substr(InstrumentID, 0, strlen(InstrumentID)-4),   
+        InstrumentYear = 2000 + int(substr(InstrumentID, strlen(InstrumentID)-4, 2)), 
+        InstrumentMonth = int(substr(InstrumentID, strlen(InstrumentID)-2, 2))  
+    WHERE strlen(InstrumentID) >= 4 AND isAlpha(substr(InstrumentID, 0, strlen(InstrumentID)-4)) AND isDigit(substr(InstrumentID, strlen(InstrumentID)-4, 4));
+
+    
+    offset = regexFind(path,"_")
+    t_offset = regexFind(path,csvData[0].InstrumentType)
+    id_offset = regexFind(path, csvData[0].InstrumentID)
+    t_len = strlen(csvData[0].InstrumentType)
+
+    is_continue = ""
+    if(id_offset < 0 && t_offset > 0) {
+        t_offset += t_len
+        is_continue = substr(path,t_offset,offset - t_offset)
+    }
+
+    UPDATE csvData
+    SET 
+    Continuous = is_continue
+
+    tableInsert(dbTableHandle,csvData)
+}
+
+def batchLoadCSV(filesPath,dbTableHandle) {
+    for(i in 0:size(filesPath)) {
+         loadCSVFile(filesPath[i],dbTableHandle)
+    }
+}
+
+def waitForJobs(mutable jobIds) {
+    again = true
+    f = 0
+    do {
+         again = false
+         for(i in 0:size(jobIds)) {
+            if(jobIds[i] == NULL)
+               continue
+            res = getJobStatus(jobIds[i])
+            if(res.endTime == NULL) {
+                again = true
+                //print(jobIds[i] + " is running! ")
+            } else {
+                f+=1
+                print("Finish (" + f + "/" + size(jobIds)+ ") :" + jobIds[i] + " completed at " + string(res.endTime))
+                if(res.errorMsg != NULL)
+                    print("Error in job:" + jobIds[i] + string(res.errorMsg))
+                jobIds[i] = NULL
+            }
+         }
+         sleep(2000)
+
+    } while(again)
+   
+    print("All Done!")
+}
+
+csvFilePath = "E:/DolphinDB/201101"
+csvFiles = findAllCSVFiles(csvFilePath)
+dbTable = loadTable("dfs://future", "tick")
+
+batchSize = 100
+if(size(csvFiles) <= batchSize) {
+    for(i in 0:size(csvFiles)) {
+       loadCSVFile(csvFiles[i],dbTable)
+       print("Finish (" + i + "/" + size(csvFiles)+ ") :" + csvFiles[i])
+    }
+} else {
+    batchFiles = cut(csvFiles,batchSize)
+    jobsID = []
+    for(j in 0:size(batchFiles)) {
+        jobsID.append!(submitJob("Job_" + j,"Job_" + j, batchLoadCSV,batchFiles[j],dbTable))
+    }
+
+    print("Total csv files:" + size(csvFiles) + " Batch size:" + batchSize + " Total batch jobs: " + size(jobsID))
+    waitForJobs(jobsID)
+}
+
+//submitJob()
+
+//temp = "E:/DolphinDB/201101/20110104/b主力连续_20110104.csv"
+
+ 
+

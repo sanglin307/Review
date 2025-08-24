@@ -1,0 +1,37 @@
+
+drop database if exists "dfs://future" 
+
+create database "dfs://future"
+partitioned by VALUE(2011.01.01..2025.12.31), HASH([SYMBOL, 50]), 
+engine='TSDB',
+atomic='CHUNK',
+chunkGranularity='TABLE'
+
+create table "dfs://future"."tick" (
+    TradingDate DATE[comment="交易日期", compress="delta"],
+    InstrumentID SYMBOL[comment="品种"],
+    UpdateTime TIME[comment="更新时间",compress="delta"],
+    UpdateMillisec INT[comment="更新周期(毫秒)"],
+    LastPrice DOUBLE[comment="成交价"],
+    Volume LONG[comment="成交总量"],
+    BidPrice1 DOUBLE[comment="买一价格"],
+    BidVolume1 LONG[comment="买一量"],
+    AskPrice1 DOUBLE[comment="卖一价格"],
+    AskVolume1 LONG[comment="卖一量"],
+    AveragePrice DOUBLE[comment="均价"],
+    Turnover DOUBLE[comment="成交金额"],
+    OpenInterest LONG[comment="未平仓合约数"],
+    UpperLimitPrice DOUBLE[comment="涨停价"],
+    LowerLimitPrice DOUBLE[comment="跌停价"],
+    InstrumentType SYMBOL[comment="品种类型"],
+    InstrumentYear INT[comment="品种年份"],
+    InstrumentMonth INT[comment="品种月份"],
+    Continuous SYMBOL[comment="连续合约类型"]
+)
+partitioned by _"TradingDate", _"InstrumentID",
+sortColumns=["TradingDate"],
+keepDuplicates=ALL
+
+
+
+// DROP TABLE "dfs://future"."tick"
