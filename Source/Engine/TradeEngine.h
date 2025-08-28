@@ -1,5 +1,7 @@
 #pragma once
 
+#include "FutureType.h"
+
 class TradeEngine
 {
 public:
@@ -7,6 +9,9 @@ public:
 
 	void Init();
 	void Destroy();
+
+	FutureID ParseFutureID(const std::string& str);
+	const std::string& ToFutureIDStr(const FutureID id);
 
 protected:
 	TradeEngine() = default;

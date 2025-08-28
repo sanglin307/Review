@@ -105,7 +105,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)Source\Thirdparty\SDL-release-3.2.20\include;$(SolutionDir)Source\Thirdparty\imgui-1.92.2b;$(SolutionDir)Source\Thirdparty\imgui-1.92.2b\backends;$(SolutionDir)Source\Thirdparty\DolphinDB\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

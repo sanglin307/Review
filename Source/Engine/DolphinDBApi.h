@@ -11,6 +11,9 @@ public:
 	void Init();
 	void Destroy();
 
+	void GetInstrumentTable(std::map<std::string, Instrument>& instrumentMap);
+	void InsertInstrumentTable(std::vector<Instrument>& inst);
+
 protected:
 	DolphinDBApi() = default;
 	DolphinDBApi(const DolphinDBApi& rhs) = delete;

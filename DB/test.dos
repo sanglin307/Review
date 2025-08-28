@@ -1,37 +1,9 @@
-csvFilePath = "E:/DolphinDB/201101"
-
-def testFunc() {
-    sleep(10000)
-}
-
-
-def waitForJobs(mutable jobIds) {
-    again = true
-    do {
-         again = false
-         for(i in 0:size(jobIds)) {
-            if(jobIds[i] == NULL)
-               continue
-            res = getJobStatus(jobIds[i])
-            if(res.endTime == NULL) {
-                again = true
-                print(jobIds[i] + " is running! ")
-            } else {
-                print(jobIds[i] + " complete " + string(res.endTime))
-                jobIds[i] = NULL
-            }
-         }
-         sleep(2000)
-
-    } while(again)
-   
-    print("All Done!")
-}
-
-jobsID = []
-for(j in 0:9) {
-    jobsID.append!(submitJob("Job_" + j,"Job_" + j, testFunc))
-    print("Submit Job : " + j)
-}
-
-waitForJobs(jobsID)
+create table "dfs://future"."id" (
+    InstrumentID SYMBOL[comment="品种编码"],
+    Continue BOOL[comment="是否连续"],
+    InstrumentType SYMBOL[comment="品种类型"],
+    InstrumentDate DATE[comment="到期时间"]
+)
+partitioned by _"InstrumentDate", _"InstrumentType",
+sortColumns=["InstrumentID"],
+keepDuplicates=ALL

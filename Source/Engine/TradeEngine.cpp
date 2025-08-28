@@ -7,6 +7,8 @@ static std::map<std::string, u16> sFutureTypeStrToEnum;
 static std::string  sFutureTypeEnumToStr[(u16)FutureID::MAX];
 static std::map<std::string, std::string>  sFutureTypeStrToName;
 
+static std::map<std::string, Instrument> sInstrumentMap;
+
 void InitFutureType()
 {
 	assert(!sFutureTypeSet.size());
@@ -117,10 +119,23 @@ void TradeEngine::Init()
 {
 	InitFutureType();
 	DolphinDBApi::Instance().Init();
-
+	DolphinDBApi::Instance().GetInstrumentTable(sInstrumentMap);
 }
 
 void TradeEngine::Destroy()
 {
 	DolphinDBApi::Instance().Destroy();
+}
+
+FutureID TradeEngine::ParseFutureID(const std::string& str)
+{
+	auto iter = sFutureTypeStrToEnum.find(str);
+	assert(iter != sFutureTypeStrToEnum.end());
+	return FutureID(iter->second);
+}
+
+const std::string& TradeEngine::ToFutureIDStr(const FutureID id)
+{
+	assert(id < FutureID::MAX);
+	return sFutureTypeEnumToStr[u16(id)];
 }

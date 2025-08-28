@@ -1,13 +1,13 @@
 
-drop database if exists "dfs://future" 
+drop database if exists "dfs://tick_data" 
 
-create database "dfs://future"
-partitioned by VALUE(2011.01.01..2025.12.31), HASH([SYMBOL, 50]), 
+create database "dfs://tick_data"
+partitioned by VALUE(2011.01.01..2025.12.31), 
 engine='TSDB',
 atomic='CHUNK',
 chunkGranularity='TABLE'
 
-create table "dfs://future"."tick" (
+create table "dfs://tick_data"."raw" (
     TradingDate DATE[comment="交易日期", compress="delta"],
     InstrumentID SYMBOL[comment="品种"],
     UpdateTime TIME[comment="更新时间",compress="delta"],
@@ -23,15 +23,28 @@ create table "dfs://future"."tick" (
     OpenInterest LONG[comment="未平仓合约数"],
     UpperLimitPrice DOUBLE[comment="涨停价"],
     LowerLimitPrice DOUBLE[comment="跌停价"],
-    InstrumentType SYMBOL[comment="品种类型"],
-    InstrumentYear INT[comment="品种年份"],
-    InstrumentMonth INT[comment="品种月份"],
-    Continuous SYMBOL[comment="连续合约类型"]
+    FileName SYMBOL[comment="导入的CSV文件名字"]
 )
-partitioned by _"TradingDate", _"InstrumentID",
+partitioned by _"TradingDate",
 sortColumns=["TradingDate"],
 keepDuplicates=ALL
 
+
+create database "dfs://working_data"
+partitioned by HASH([SYMBOL, 10]), 
+engine='TSDB',
+atomic='CHUNK',
+chunkGranularity='TABLE'
+
+create table "dfs://working_data"."instrument" (
+    ID SYMBOL[comment="品种编码"],
+    Continue BOOL[comment="是否连续"],
+    Type SYMBOL[comment="品种类型"],
+    Date DATE[comment="到期时间"]
+)
+partitioned by _"ID",
+sortColumns=["ID"],
+keepDuplicates=ALL
 
 
 // DROP TABLE "dfs://future"."tick"

@@ -25,33 +25,21 @@ def loadCSVFile(path, dbTableHandle) {
     csvSchema = extractTextSchema(path, delimiter=',')
     csvData = loadText(path, schema=csvSchema, delimiter=',')
 
-    addColumn(csvData, `InstrumentType, SYMBOL) 
-    addColumn(csvData, `InstrumentYear, INT) 
-    addColumn(csvData, `InstrumentMonth, INT)
-    addColumn(csvData, `Continuous, SYMBOL)
+    addColumn(csvData, `FileName, SYMBOL) 
+
+    pos = 0
+    f = ""
+    do {
+        pos = regexFind(path,"/",pos)
+        if(pos != -1) {
+            pos += 1
+            f = substr(path,pos)
+        }
+    } while(pos != -1)
 
     UPDATE csvData
     SET 
-        InstrumentType = substr(InstrumentID, 0, strlen(InstrumentID)-4),   
-        InstrumentYear = 2000 + int(substr(InstrumentID, strlen(InstrumentID)-4, 2)), 
-        InstrumentMonth = int(substr(InstrumentID, strlen(InstrumentID)-2, 2))  
-    WHERE strlen(InstrumentID) >= 4 AND isAlpha(substr(InstrumentID, 0, strlen(InstrumentID)-4)) AND isDigit(substr(InstrumentID, strlen(InstrumentID)-4, 4));
-
-    
-    offset = regexFind(path,"_")
-    t_offset = regexFind(path,csvData[0].InstrumentType)
-    id_offset = regexFind(path, csvData[0].InstrumentID)
-    t_len = strlen(csvData[0].InstrumentType)
-
-    is_continue = ""
-    if(id_offset < 0 && t_offset > 0) {
-        t_offset += t_len
-        is_continue = substr(path,t_offset,offset - t_offset)
-    }
-
-    UPDATE csvData
-    SET 
-    Continuous = is_continue
+    FileName = f
 
     tableInsert(dbTableHandle,csvData)
 }
@@ -91,7 +79,7 @@ def waitForJobs(mutable jobIds) {
 
 csvFilePath = "E:/DolphinDB/201101"
 csvFiles = findAllCSVFiles(csvFilePath)
-dbTable = loadTable("dfs://future", "tick")
+dbTable = loadTable("dfs://tick_data", "raw")
 
 batchSize = 100
 if(size(csvFiles) <= batchSize) {

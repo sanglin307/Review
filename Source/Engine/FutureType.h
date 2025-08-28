@@ -5,6 +5,7 @@
 #include <map>
 #include <vector>
 #include <cassert>
+#include <chrono>
 
 typedef char  i8;
 typedef short i16;
@@ -116,4 +117,31 @@ enum class FutureID : u16
 
 	MAX
 };
- 
+
+struct TickData
+{
+	std::chrono::year_month_day  TradingDate;
+	std::string InstrumentID;
+	std::chrono::hh_mm_ss<std::chrono::seconds>  UpdateTime;
+	u32  UpdateMillisec;
+	double LastPrice;
+	u64  Volume;
+	double BidPrice1;
+	u64  BidVolume1;
+	double AskPrice1;
+	u64 AskVolume1;
+	double AveragePrice;
+	double Turnover;
+	u64 OpenInterest;
+	double UpperLimitPrice;
+	double LowerLimitPrice;
+	std::string FileName;
+};
+
+struct Instrument
+{
+	std::string ID;
+	bool IsContinue;
+	FutureID Type;
+	std::chrono::year_month  ExpirationDate;
+};
