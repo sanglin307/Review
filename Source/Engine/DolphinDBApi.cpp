@@ -4,6 +4,19 @@
 
 using namespace dolphindb;
 
+static std::string sDBConnectionIP = "127.0.0.1";
+static u16 sDBConnectionPort = 8848;
+static std::string sAccountName = "admin";
+static std::string sAccountPassword = "123456";
+
+// DB & table name
+static std::string sRawDataDBName = "dfs://tick_data";
+static std::string sRawDataTableName = "raw";
+
+static std::string sWorkingDataDBName = "dfs://working_data";
+static std::string sInstrumentTableName = "instrument";
+
+
 DolphinDBApi& DolphinDBApi::Instance()
 {
     static DolphinDBApi Inst;
@@ -12,7 +25,7 @@ DolphinDBApi& DolphinDBApi::Instance()
 
 void DolphinDBApi::Init()
 {
-    bool ret = _connection.connect("127.0.0.1", 8848,"admin","123456");
+    bool ret = _connection.connect(sDBConnectionIP, sDBConnectionPort, sAccountName, sAccountPassword);
     if (!ret) {
         assert(0);
         return;
@@ -26,7 +39,8 @@ void DolphinDBApi::Destroy()
 
 void DolphinDBApi::GetInstrumentTable(std::map<std::string, Instrument>& instrumentMap)
 {
-    TableSP result = _connection.run("SELECT * FROM loadTable(\"dfs://working_data\", \"instrument\")");
+    std::string cmd = std::format("SELECT * FROM loadTable(\"{}\", \"{}\")", sWorkingDataDBName.c_str(), sInstrumentTableName.c_str());
+    TableSP result = _connection.run(cmd);
     for (int i = 0; i < result->size(); i++)
     {
         DictionarySP c = result->get(i);
@@ -63,5 +77,6 @@ void DolphinDBApi::InsertInstrumentTable(std::vector<Instrument>& inst)
 
     std::vector<ConstantSP> args;
     args.push_back(table);
-    _connection.run("tableInsert{loadTable('dfs://working_data', `instrument)}", args);
+    std::string cmd = std::format("tableInsert{loadTable(\"{}\", \"{}\")}", sWorkingDataDBName.c_str(), sInstrumentTableName.c_str());
+    _connection.run(cmd, args);
 }

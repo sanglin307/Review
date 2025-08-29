@@ -136,6 +136,7 @@
   <ItemGroup>
     <ClCompile Include="DataProcess.cpp" />
     <ClCompile Include="DolphinDBApi.cpp" />
+    <ClCompile Include="MainFrame.cpp" />
     <ClCompile Include="TradeEngine.cpp" />
     <ClCompile Include="WinLauncher.cpp" />
   </ItemGroup>
@@ -143,6 +144,7 @@
     <ClInclude Include="DataProcess.h" />
     <ClInclude Include="DolphinDBApi.h" />
     <ClInclude Include="FutureType.h" />
+    <ClInclude Include="MainFrame.h" />
     <ClInclude Include="TradeEngine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
