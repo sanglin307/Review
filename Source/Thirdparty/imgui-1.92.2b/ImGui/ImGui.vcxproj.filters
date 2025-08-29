@@ -16,6 +16,12 @@
     <Filter Include="源文件\backend">
       <UniqueIdentifier>{eb2cdb79-3bd6-4f58-84ef-3cd81351ffcc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\implot">
+      <UniqueIdentifier>{d5488973-c10b-4ca8-9f3e-5e8936e9f1df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\implot">
+      <UniqueIdentifier>{ea3a5b81-b125-4f0a-9eb9-eac85a95d2a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\imconfig.h">
@@ -48,6 +54,12 @@
     <ClInclude Include="..\backends\imgui_impl_sdlgpu3_shaders.h">
       <Filter>源文件\backend</Filter>
     </ClInclude>
+    <ClInclude Include="..\Implot\implot.h">
+      <Filter>头文件\implot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Implot\implot_internal.h">
+      <Filter>头文件\implot</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\imgui.cpp">
@@ -73,6 +85,15 @@
     </ClCompile>
     <ClCompile Include="..\backends\imgui_impl_sdlgpu3.cpp">
       <Filter>源文件\backend</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Implot\implot.cpp">
+      <Filter>源文件\implot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Implot\implot_demo.cpp">
+      <Filter>源文件\implot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Implot\implot_items.cpp">
+      <Filter>源文件\implot</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

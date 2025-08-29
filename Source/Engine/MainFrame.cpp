@@ -1,5 +1,6 @@
 #include "MainFrame.h"
 #include "imgui.h"
+#include "implot/implot.h"
 
 void OpenMainFrame()
 {
@@ -18,5 +19,7 @@ void OpenMainFrame()
 
         ImGui::End();
     }
+
+    ImPlot::ShowDemoWindow();
 
 }
